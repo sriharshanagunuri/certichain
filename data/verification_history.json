@@ -1,0 +1,12 @@
+[
+    {
+        "certificate_id": "DEMO-CERT-003",
+        "status": "VALID",
+        "verified_at": "2026-09-21T21:59:28.492390"
+    },
+    {
+        "certificate_id": "DEMO-CERT-003",
+        "status": "TAMPERED",
+        "verified_at": "2026-09-21T22:34:16.142889"
+    }
+]

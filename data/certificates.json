@@ -1,0 +1,30 @@
+[
+    {
+        "certificate_id": "DEMO-CERT-003",
+        "student_name": "ABC",
+        "course": "B.Tech",
+        "branch": "CSE",
+        "year": "2026",
+        "college_name": "DEMOP Engineering College",
+        "issued_date": "2026-09-21",
+        "certificate_hash": "baa010f99661d20e2822604a6991ac5008b257cecc857d929f4a9bff6b621331",
+        "issuer_college_id": "COL-0002",
+        "issuer_college_name": "DEMOP Engineering College",
+        "blockchain_transaction": "1ab8cef4beb2a7823c58df07cb4b3a32bf9bb993a4867c341d2b83eea218ab91",
+        "registered_at": "2026-09-21T21:50:33.339545"
+    },
+    {
+        "certificate_id": "DEMO-CERT-01",
+        "student_name": "ABC",
+        "course": "B.Tech",
+        "branch": "IT",
+        "year": "2026",
+        "college_name": "DEMOA Engineering College",
+        "issued_date": "2026-09-21",
+        "certificate_hash": "555206a71b9cb74ecbac4441e6b5028cc714653ca74ae9a26e501d7dcbb91c6b",
+        "issuer_college_id": "COL-0003",
+        "issuer_college_name": "DEMOA Engineering College",
+        "blockchain_transaction": "60a292405a3c3f86c664ebd6d60c093f66bedb2bef62c0ec1431ba4c81dbb42f",
+        "registered_at": "2026-09-21T22:32:32.849674"
+    }
+]

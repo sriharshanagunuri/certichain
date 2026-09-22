@@ -1,0 +1,9 @@
+[
+    {
+        "admin_id": "ADM-001",
+        "username": "systemadmin",
+        "password": "SYS-ADMIN-2026",
+        "role": "SYSTEM_ADMIN",
+        "status": "ACTIVE"
+    }
+]

@@ -1,0 +1,39 @@
+[
+    {
+        "college_id": "COL-0001",
+        "college_name": "Demo Engineering College",
+        "username": "Demo Engineering College",
+        "password": "3p5JA-dx2x0",
+        "contact_person": "Exam Branch",
+        "email": "demo@college.com",
+        "phone": "",
+        "api_key": "API-8X0XhlL9CPzjHGf1vJMzSbx64lRbQ540",
+        "api_status": "APPROVED",
+        "status": "ACTIVE",
+        "created_at": "2026-09-21T20:28:17.101502"
+    },
+    {
+        "college_id": "COL-0002",
+        "college_name": "DEMOP Engineering College",
+        "username": "DEMOP Engineering College",
+        "password": "xavN1soWn04",
+        "contact_person": "Exam Branch",
+        "email": "demop@example.com",
+        "api_key": "API-kyLDmT5Kh0c5OQJnMPCDA5sydbBmb-Kk",
+        "api_status": "APPROVED",
+        "status": "ACTIVE",
+        "created_at": "2026-09-21T21:30:48.617989"
+    },
+    {
+        "college_id": "COL-0003",
+        "college_name": "DEMOA Engineering College",
+        "username": "DEMOA Engineering College",
+        "password": "FpeBOd6h5BI",
+        "contact_person": "Exam Branch",
+        "email": "demoa@example.com",
+        "api_key": "API-YzUxcn3EXyY-eDCZ16aa_S9BHa4iWa1M",
+        "api_status": "APPROVED",
+        "status": "ACTIVE",
+        "created_at": "2026-09-21T22:29:05.477861"
+    }
+]

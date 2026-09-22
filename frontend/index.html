@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Validation System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f6fb;
+            color: #111;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 20px 32px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 32px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #172554;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: #172554;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 7px;
+            font-size: 16px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 16px;
+            background: white;
+        }
+
+        button {
+            border: none;
+            border-radius: 7px;
+            padding: 12px 20px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 18px;
+            margin-right: 8px;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .success {
+            background: #15803d;
+            color: white;
+        }
+
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .dark {
+            background: #172554;
+            color: white;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .button-grid button {
+            margin: 0;
+            min-height: 55px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 13px;
+            border-radius: 7px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .message.success-msg {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error-msg {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message.info-msg {
+            display: block;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff7ed;
+            border-left: 5px solid #f97316;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        .status-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .valid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .tampered {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .not-registered {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 13px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result-item strong {
+            display: block;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #172554;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .credential-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .credential-box p {
+            margin: 7px 0;
+        }
+
+        .small {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                width: 94%;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Certificate Validation System</h1>
+</header>
+
+<div class="container">
+
+    <!-- ========================================================= -->
+    <!-- LANDING PAGE -->
+    <!-- ========================================================= -->
+
+    <section id="landingPage" class="card">
+        <h2>Welcome</h2>
+
+        <p>
+            Blockchain-based Certificate Validation System
+        </p>
+
+        <div class="button-grid">
+            <button class="primary" onclick="showSection('collegeRegisterPage')">
+                College Registration
+            </button>
+
+            <button class="dark" onclick="showSection('collegeLoginPage')">
+                College Login
+            </button>
+
+            <button class="secondary" onclick="showSection('adminLoginPage')">
+                System Admin Login
+            </button>
+        </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- COLLEGE REGISTRATION -->
+    <!-- ========================================================= -->
+
+    <section id="collegeRegisterPage" class="card hidden">
+
+        <h2>College Registration</h2>
+
+        <form id="collegeRegisterForm">
+
+            <label for="collegeName">
+                College Name
+            </label>
+
+            <input
+                type="text"
+                id="collegeName"
+                autocomplete="off"
+            >
+
+            <label for="contactPerson">
+                Contact Person
+            </label>
+
+            <input
+                type="text"
+                id="contactPerson"
+                autocomplete="off"
+            >
+
+            <label for="collegeEmail">
+                Email
+            </label>
+
+            <input
+                type="email"
+                id="collegeEmail"
+                autocomplete="off"
+            >
+
+            <button type="submit" class="primary">
+                Register College
+            </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="showSection('landingPage')"
+            >
+                Back
+            </button>
+
+        </form>
+
+        <div id="collegeRegisterMessage" class="message"></div>
+
+        <div id="collegeCredentials" class="credential-box hidden">
+            <h3>College Registration Successful</h3>
+
+            <p>
+                <strong>College ID:</strong>
+                <span id="newCollegeId"></span>
+            </p>
+
+            <p>
+                <strong>Username:</strong>
+                <span id="newCollegeUsername"></span>
+            </p>
+
+            <p>
+                <strong>Password:</strong>
+                <span id="newCollegePassword"></span>
+            </p>
+
+            <p class="small">
+                Save these credentials for college login.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- COLLEGE LOGIN -->
+    <!-- ========================================================= -->
+
+    <section id="collegeLoginPage" class="card hidden">
+
+        <h2>College Login</h2>
+
+        <form id="collegeLoginForm">
+
+            <label for="loginUsername">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="loginUsername"
+                autocomplete="off"
+            >
+
+            <label for="loginPassword">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="loginPassword"
+                autocomplete="off"
+            >
+
+            <button type="submit" class="primary">
+                Login
+            </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="showSection('landingPage')"
+            >
+                Back
+            </button>
+
+        </form>
+
+        <div id="collegeLoginMessage" class="message"></div>
+
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- COLLEGE DASHBOARD -->
+    <!-- ========================================================= -->
+
+    <section id="collegeDashboard" class="hidden">
+
+        <div class="card">
+
+            <div class="top-bar">
+
+                <div>
+                    <h2>College Dashboard</h2>
+
+                    <p>
+                        Welcome,
+                        <strong id="dashboardCollegeName"></strong>
+                    </p>
+
+                    <p class="small">
+                        College ID:
+                        <span id="dashboardCollegeId"></span>
+                    </p>
+                </div>
+
+                <button
+                    class="danger"
+                    onclick="collegeLogout()"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>College Services</h2>
+
+            <div class="button-grid">
+
+                <button
+                    class="primary"
+                    onclick="showDashboardPage('apiIntegrationPage')"
+                >
+                    API Integration
+                </button>
+
+                <button
+                    class="success"
+                    onclick="showDashboardPage('registerCertificatePage')"
+                >
+                    Register Certificate
+                </button>
+
+                <button
+                    class="dark"
+                    onclick="showDashboardPage('verifyCertificatePage')"
+                >
+                    Verify Certificate
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="showDashboardPage('registeredCertificatesPage')"
+                >
+                    Registered Certificates
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="showDashboardPage('verificationHistoryPage')"
+                >
+                    Verification History
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- API INTEGRATION -->
+        <!-- ===================================================== -->
+
+        <section id="apiIntegrationPage" class="card dashboard-page hidden">
+
+            <h2>API Integration</h2>
+
+            <div class="info-box">
+                The college must request API access before registering
+                certificates through the REST API.
+            </div>
+
+            <button
+                id="requestApiButton"
+                class="primary"
+                onclick="requestApiAccess()"
+            >
+                Request API Access
+            </button>
+
+            <button
+                class="secondary"
+                onclick="showDashboardPage('collegeDashboard')"
+            >
+                Back
+            </button>
+
+            <div id="apiStatusMessage" class="message"></div>
+
+            <div id="apiStatusBox" class="credential-box hidden">
+
+                <h3>API Access Details</h3>
+
+                <p>
+                    <strong>Status:</strong>
+                    <span id="apiStatus"></span>
+                </p>
+
+                <p>
+                    <strong>API Key:</strong>
+                    <span id="apiKey"></span>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ===================================================== -->
+        <!-- REGISTER CERTIFICATE -->
+        <!-- ===================================================== -->
+
+        <section id="registerCertificatePage" class="card dashboard-page hidden">
+
+            <h2>Register Certificate</h2>
+
+            <div class="info-box">
+                Certificate details are converted into a SHA-256 hash
+                and registered on the blockchain through the REST API.
+            </div>
+
+            <form id="certificateRegisterForm">
+
+                <label for="certificateId">
+                    Certificate ID
+                </label>
+
+                <input
+                    type="text"
+                    id="certificateId"
+                    autocomplete="off"
+                >
+
+                <label for="studentName">
+                    Student Name
+                </label>
+
+                <input
+                    type="text"
+                    id="studentName"
+                    autocomplete="off"
+                >
+
+                <label for="course">
+                    Course
+                </label>
+
+                <input
+                    type="text"
+                    id="course"
+                    autocomplete="off"
+                >
+
+                <label for="branch">
+                    Branch
+                </label>
+
+                <input
+                    type="text"
+                    id="branch"
+                    autocomplete="off"
+                >
+
+                <label for="year">
+                    Year
+                </label>
+
+                <input
+                    type="text"
+                    id="year"
+                    autocomplete="off"
+                >
+
+                <label for="certificateCollegeName">
+                    College Name
+                </label>
+
+                <input
+                    type="text"
+                    id="certificateCollegeName"
+                    autocomplete="off"
+                >
+
+                <label for="issuedDate">
+                    Issued Date
+                </label>
+
+                <input
+                    type="date"
+                    id="issuedDate"
+                >
+
+                <button
+                    type="submit"
+                    class="success"
+                >
+                    Register Certificate
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary"
+                    onclick="showDashboardPage('collegeDashboard')"
+                >
+                    Back
+                </button>
+
+            </form>
+
+            <div id="certificateRegisterMessage" class="message"></div>
+
+            <div id="certificateRegisterResult" class="hidden">
+
+                <div class="credential-box">
+
+                    <h3>Certificate Registered Successfully</h3>
+
+                    <p>
+                        <strong>Certificate ID:</strong>
+                        <span id="registeredCertificateId"></span>
+                    </p>
+
+                    <p>
+                        <strong>SHA-256 Hash:</strong>
+                        <span id="registeredCertificateHash"></span>
+                    </p>
+
+                    <p>
+                        <strong>Blockchain Transaction:</strong>
+                        <span id="registeredTransactionHash"></span>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ===================================================== -->
+        <!-- VERIFY CERTIFICATE -->
+        <!-- ===================================================== -->
+
+        <section id="verifyCertificatePage" class="card dashboard-page hidden">
+
+            <h2>Verify Certificate</h2>
+
+            <div class="info-box">
+                Any registered college can verify a certificate using
+                its Certificate ID.
+            </div>
+
+            <form id="verifyCertificateForm">
+
+    <label for="verifyCertificateId">Certificate ID</label>
+    <input type="text" id="verifyCertificateId" autocomplete="off">
+
+    <label for="verifyStudentName">Student Name</label>
+    <input type="text" id="verifyStudentName">
+
+    <label for="verifyCourse">Course</label>
+    <input type="text" id="verifyCourse">
+
+    <label for="verifyBranch">Branch</label>
+    <input type="text" id="verifyBranch">
+
+    <label for="verifyYear">Year</label>
+    <input type="text" id="verifyYear">
+
+    <label for="verifyCollegeName">College Name</label>
+    <input type="text" id="verifyCollegeName">
+
+    <label for="verifyIssuedDate">Issued Date</label>
+    <input type="date" id="verifyIssuedDate">
+
+    <button type="submit" class="primary">
+        Verify Certificate
+    </button>
+
+    <button
+        type="button"
+        class="secondary"
+        onclick="showDashboardPage('collegeDashboard')"
+    >
+        Back
+    </button>
+
+</form
+            <div id="verificationMessage" class="message"></div>
+
+            <div id="verificationResult" class="hidden">
+
+                <div id="verificationStatusBox"
+                     class="status-box">
+
+                    <strong id="verificationStatus"></strong>
+
+                </div>
+
+                <div class="result-grid">
+
+                    <div class="result-item">
+                        <strong>Certificate ID</strong>
+                        <span id="verifyResultId"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>Student Name</strong>
+                        <span id="verifyResultStudent"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>Course</strong>
+                        <span id="verifyResultCourse"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>Branch</strong>
+                        <span id="verifyResultBranch"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>Year</strong>
+                        <span id="verifyResultYear"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>College</strong>
+                        <span id="verifyResultCollege"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>Issued Date</strong>
+                        <span id="verifyResultDate"></span>
+                    </div>
+
+                    <div class="result-item">
+                        <strong>Hash</strong>
+                        <span id="verifyResultHash"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ===================================================== -->
+        <!-- REGISTERED CERTIFICATES -->
+        <!-- ===================================================== -->
+
+        <section id="registeredCertificatesPage"
+                 class="card dashboard-page hidden">
+
+            <h2>Registered Certificates</h2>
+
+            <button
+                class="primary"
+                onclick="loadRegisteredCertificates()"
+            >
+                Refresh
+            </button>
+
+            <button
+                class="secondary"
+                onclick="showDashboardPage('collegeDashboard')"
+            >
+                Back
+            </button>
+
+            <div id="registeredCertificatesContent"></div>
+
+        </section>
+
+
+        <!-- ===================================================== -->
+        <!-- VERIFICATION HISTORY -->
+        <!-- ===================================================== -->
+
+        <section id="verificationHistoryPage"
+                 class="card dashboard-page hidden">
+
+            <h2>Verification History</h2>
+
+            <button
+                class="primary"
+                onclick="loadVerificationHistory()"
+            >
+                Refresh
+            </button>
+
+            <button
+                class="secondary"
+                onclick="showDashboardPage('collegeDashboard')"
+            >
+                Back
+            </button>
+
+            <div id="verificationHistoryContent"></div>
+
+        </section>
+
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- SYSTEM ADMIN LOGIN -->
+    <!-- ========================================================= -->
+
+    <section id="adminLoginPage" class="card hidden">
+
+        <h2>System Admin Login</h2>
+
+        <div class="warning-box">
+            System Admin access is restricted to authorized administrators.
+        </div>
+
+        <form id="adminLoginForm">
+
+            <label for="adminUsername">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="adminUsername"
+                autocomplete="off"
+            >
+
+            <label for="adminPassword">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="adminPassword"
+                autocomplete="off"
+            >
+
+            <button
+                type="submit"
+                class="dark"
+            >
+                Admin Login
+            </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="showSection('landingPage')"
+            >
+                Back
+            </button>
+
+        </form>
+
+        <div id="adminLoginMessage" class="message"></div>
+
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- ADMIN DASHBOARD -->
+    <!-- ========================================================= -->
+
+    <section id="adminDashboard" class="hidden">
+
+        <div class="card">
+
+            <div class="top-bar">
+
+                <div>
+                    <h2>System Admin Dashboard</h2>
+
+                    <p>
+                        Authorized System Administration
+                    </p>
+                </div>
+
+                <button
+                    class="danger"
+                    onclick="adminLogout()"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>API Access Requests</h2>
+
+            <button
+                class="primary"
+                onclick="loadAdminRequests()"
+            >
+                Refresh Requests
+            </button>
+
+            <div id="adminRequestsContent"></div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    const API = window.location.origin;
+
+    let collegeData = null;
+    let adminToken = null;
+
+
+    // ============================================================
+    // GENERAL FUNCTIONS
+    // ============================================================
+
+    function showSection(sectionId) {
+
+        const sections = [
+            "landingPage",
+            "collegeRegisterPage",
+            "collegeLoginPage",
+            "collegeDashboard",
+            "adminLoginPage",
+            "adminDashboard"
+        ];
+
+        sections.forEach(id => {
+
+            const element = document.getElementById(id);
+
+            if (element) {
+                element.classList.add("hidden");
+            }
+
+        });
+
+        const selected = document.getElementById(sectionId);
+
+        if (selected) {
+            selected.classList.remove("hidden");
+        }
+    }
+
+
+    function showDashboardPage(pageId) {
+
+        if (pageId === "collegeDashboard") {
+
+            document.querySelectorAll(".dashboard-page")
+                .forEach(page => page.classList.add("hidden"));
+
+            return;
+        }
+
+        document.querySelectorAll(".dashboard-page")
+            .forEach(page => page.classList.add("hidden"));
+
+        const page = document.getElementById(pageId);
+
+        if (page) {
+            page.classList.remove("hidden");
+        }
+    }
+
+
+    function setMessage(elementId, message, type) {
+
+        const element = document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
+
+        element.textContent = message;
+
+        element.className = "message";
+
+        if (type === "success") {
+            element.classList.add("success-msg");
+        }
+        else if (type === "error") {
+            element.classList.add("error-msg");
+        }
+        else {
+            element.classList.add("info-msg");
+        }
+    }
+
+
+    function clearMessage(elementId) {
+
+        const element = document.getElementById(elementId);
+
+        if (!element) {
+            return;
+        }
+
+        element.textContent = "";
+        element.className = "message";
+    }
+
+
+    // ============================================================
+    // COLLEGE REGISTRATION
+    // ============================================================
+
+    document.getElementById("collegeRegisterForm")
+        .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        clearMessage("collegeRegisterMessage");
+
+        const data = {
+
+            college_name:
+                document.getElementById("collegeName")
+                    .value.trim(),
+
+            contact_person:
+                document.getElementById("contactPerson")
+                    .value.trim(),
+
+            email:
+                document.getElementById("collegeEmail")
+                    .value.trim()
+
+        };
+
+
+        if (
+            !data.college_name ||
+            !data.contact_person ||
+            !data.email
+        ) {
+
+            setMessage(
+                "collegeRegisterMessage",
+                "Please fill all required fields.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/colleges/register`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(data)
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                setMessage(
+                    "collegeRegisterMessage",
+                    result.message || "Registration failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            setMessage(
+                "collegeRegisterMessage",
+                "College registered successfully.",
+                "success"
+            );
+
+
+            // Flask returns the generated credentials inside result.college
+            document.getElementById("newCollegeId")
+                .textContent = result.college?.college_id || "";
+
+            document.getElementById("newCollegeUsername")
+                .textContent = result.college?.username || "";
+
+            document.getElementById("newCollegePassword")
+                .textContent = result.college?.password || "";
+
+            document.getElementById("collegeCredentials")
+                .classList.remove("hidden");
+
+
+            document.getElementById("collegeRegisterForm")
+                .reset();
+
+        }
+
+        catch (error) {
+
+            setMessage(
+                "collegeRegisterMessage",
+                "Unable to connect to the backend.",
+                "error"
+            );
+
+            console.error(error);
+        }
+
+    });
+
+
+    // ============================================================
+    // COLLEGE LOGIN
+    // ============================================================
+
+    document.getElementById("collegeLoginForm")
+        .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        clearMessage("collegeLoginMessage");
+
+        const username =
+            document.getElementById("loginUsername")
+                .value.trim();
+
+        const password =
+            document.getElementById("loginPassword")
+                .value;
+
+
+        if (!username || !password) {
+
+            setMessage(
+                "collegeLoginMessage",
+                "Please enter username and password.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/colleges/login`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                setMessage(
+                    "collegeLoginMessage",
+                    result.message || "Login failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            collegeData = result.college || result;
+
+
+            document.getElementById("dashboardCollegeName")
+                .textContent =
+                collegeData.college_name || "";
+
+            document.getElementById("dashboardCollegeId")
+                .textContent =
+                collegeData.college_id || "";
+
+
+            document.getElementById("collegeLoginForm")
+                .reset();
+
+
+            showSection("collegeDashboard");
+
+            loadApiStatus();
+
+        }
+
+        catch (error) {
+
+            setMessage(
+                "collegeLoginMessage",
+                "Unable to connect to the backend.",
+                "error"
+            );
+
+            console.error(error);
+        }
+
+    });
+
+
+    // ============================================================
+    // API ACCESS REQUEST
+    // ============================================================
+
+    async function requestApiAccess() {
+
+        if (!collegeData) {
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/college/api-request`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        college_id: collegeData.college_id
+                    })
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                setMessage(
+                    "apiStatusMessage",
+                    result.message || "API request failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            setMessage(
+                "apiStatusMessage",
+                result.message ||
+                "API access request submitted.",
+                "success"
+            );
+
+
+            loadApiStatus();
+
+        }
+
+        catch (error) {
+
+            setMessage(
+                "apiStatusMessage",
+                "Unable to connect to backend.",
+                "error"
+            );
+
+            console.error(error);
+        }
+
+    }
+
+
+    async function loadApiStatus() {
+
+        if (!collegeData) {
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/college/api-status/${collegeData.college_id}`
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+                return;
+            }
+
+
+            document.getElementById("apiStatusBox")
+                .classList.remove("hidden");
+
+
+            document.getElementById("apiStatus")
+                .textContent =
+                result.status || "NOT REQUESTED";
+
+
+            document.getElementById("apiKey")
+                .textContent =
+                result.api_key || "Not generated yet";
+
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    // ============================================================
+    // CERTIFICATE REGISTRATION
+    // ============================================================
+
+    document.getElementById("certificateRegisterForm")
+        .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        clearMessage("certificateRegisterMessage");
+
+        const certificateData = {
+
+            certificate_id:
+                document.getElementById("certificateId")
+                    .value.trim(),
+
+            student_name:
+                document.getElementById("studentName")
+                    .value.trim(),
+
+            course:
+                document.getElementById("course")
+                    .value.trim(),
+
+            branch:
+                document.getElementById("branch")
+                    .value.trim(),
+
+            year:
+                document.getElementById("year")
+                    .value.trim(),
+
+            college_name:
+                document.getElementById("certificateCollegeName")
+                    .value.trim(),
+
+            issued_date:
+                document.getElementById("issuedDate")
+                    .value
+
+        };
+
+
+        const fields = Object.values(certificateData);
+
+
+        if (fields.some(value => !value)) {
+
+            setMessage(
+                "certificateRegisterMessage",
+                "Please fill all certificate details.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!collegeData) {
+
+            setMessage(
+                "certificateRegisterMessage",
+                "College login required.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const statusResponse = await fetch(
+                `${API}/api/college/api-status/${collegeData.college_id}`
+            );
+
+
+            const statusResult =
+                await statusResponse.json();
+
+
+            if (
+                !statusResponse.ok ||
+                statusResult.status !== "APPROVED" ||
+                !statusResult.api_key
+            ) {
+
+                setMessage(
+                    "certificateRegisterMessage",
+                    "API access must be approved by the System Admin before registering certificates.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const response = await fetch(
+                `${API}/api/v1/certificates`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-API-Key": statusResult.api_key
+                    },
+
+                    body: JSON.stringify(certificateData)
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                setMessage(
+                    "certificateRegisterMessage",
+                    result.message ||
+                    "Certificate registration failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            setMessage(
+                "certificateRegisterMessage",
+                "Certificate registered successfully on the blockchain.",
+                "success"
+            );
+
+
+            document.getElementById("registeredCertificateId")
+                .textContent =
+                result.certificate_id ||
+                certificateData.certificate_id;
+
+
+            document.getElementById("registeredCertificateHash")
+                .textContent =
+                result.hash ||
+                result.certificate_hash ||
+                "";
+
+
+            document.getElementById("registeredTransactionHash")
+                .textContent =
+                result.transaction_hash ||
+                result.tx_hash ||
+                "";
+
+
+            document.getElementById("certificateRegisterResult")
+                .classList.remove("hidden");
+
+
+            /*
+                IMPORTANT:
+                Reset all certificate fields after successful registration.
+            */
+
+            document.getElementById("certificateRegisterForm")
+                .reset();
+
+        }
+
+        catch (error) {
+
+            setMessage(
+                "certificateRegisterMessage",
+                "Unable to connect to backend.",
+                "error"
+            );
+
+            console.error(error);
+        }
+
+    });
+
+
+    // ============================================================
+    // VERIFY CERTIFICATE
+    // ============================================================
+
+    document.getElementById("verifyCertificateForm")
+        .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        clearMessage("verificationMessage");
+
+        document.getElementById("verificationResult")
+            .classList.add("hidden");
+
+
+        const certificateId =
+            document.getElementById("verifyCertificateId")
+                .value.trim();
+const verificationData = {
+    student_name: document.getElementById("verifyStudentName").value.trim(),
+    course: document.getElementById("verifyCourse").value.trim(),
+    branch: document.getElementById("verifyBranch").value.trim(),
+    year: document.getElementById("verifyYear").value.trim(),
+    college_name: document.getElementById("verifyCollegeName").value.trim(),
+    issued_date: document.getElementById("verifyIssuedDate").value.trim()
+};
+
+
+        if (!certificateId) {
+
+            setMessage(
+                "verificationMessage",
+                "Please enter a Certificate ID.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/certificates/verify/${encodeURIComponent(certificateId)}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+		    body: JSON.stringify(verificationData)
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                setMessage(
+                    "verificationMessage",
+                    result.message ||
+                    "Verification failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            document.getElementById("verificationResult")
+                .classList.remove("hidden");
+
+
+            const status =
+                result.status ||
+                (result.valid ? "VALID" : "TAMPERED");
+
+
+            const statusBox =
+                document.getElementById("verificationStatusBox");
+
+
+            statusBox.className = "status-box";
+
+
+            if (status === "VALID") {
+
+                statusBox.classList.add("valid");
+
+                document.getElementById("verificationStatus")
+                    .textContent =
+                    "✓ VALID CERTIFICATE";
+
+            }
+
+            else if (status === "TAMPERED") {
+
+                statusBox.classList.add("tampered");
+
+                document.getElementById("verificationStatus")
+                    .textContent =
+                    "✗ TAMPERED CERTIFICATE";
+
+            }
+
+            else {
+
+                statusBox.classList.add("not-registered");
+
+                document.getElementById("verificationStatus")
+                    .textContent =
+                    "⚠ COLLEGE NOT YET REGISTERED";
+
+            }
+
+
+            const data =
+                result.certificate ||
+                result.certificate_data ||
+                result.data ||
+                {};
+
+
+            document.getElementById("verifyResultId")
+                .textContent =
+                data.certificate_id ||
+                certificateId;
+
+
+            document.getElementById("verifyResultStudent")
+                .textContent =
+                data.student_name || "";
+
+
+            document.getElementById("verifyResultCourse")
+                .textContent =
+                data.course || "";
+
+
+            document.getElementById("verifyResultBranch")
+                .textContent =
+                data.branch || "";
+
+
+            document.getElementById("verifyResultYear")
+                .textContent =
+                data.year || "";
+
+
+            document.getElementById("verifyResultCollege")
+                .textContent =
+                data.college_name || "";
+
+
+            document.getElementById("verifyResultDate")
+                .textContent =
+                data.issued_date || "";
+
+
+            document.getElementById("verifyResultHash")
+                .textContent =
+                result.hash ||
+                result.certificate_hash ||
+                data.hash ||
+                "";
+
+
+            setMessage(
+                "verificationMessage",
+                result.message ||
+                "Verification completed.",
+                status === "VALID" ? "success" : "info"
+            );
+
+        }
+
+        catch (error) {
+
+            setMessage(
+                "verificationMessage",
+                "Unable to connect to backend.",
+                "error"
+            );
+
+            console.error(error);
+        }
+
+    });
+
+
+    // ============================================================
+    // REGISTERED CERTIFICATES
+    // ============================================================
+
+    async function loadRegisteredCertificates() {
+
+        const container =
+            document.getElementById(
+                "registeredCertificatesContent"
+            );
+
+
+        if (!collegeData) {
+            return;
+        }
+
+
+        container.innerHTML =
+            "<p>Loading certificates...</p>";
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/dashboard/${collegeData.college_id}`
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                container.innerHTML =
+                    "<p>Unable to load certificates.</p>";
+
+                return;
+            }
+
+
+            const certificates =
+                result.certificates || [];
+
+
+            if (certificates.length === 0) {
+
+                container.innerHTML =
+                    "<p>No certificates registered yet.</p>";
+
+                return;
+            }
+
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Certificate ID</th>
+                            <th>Student Name</th>
+                            <th>Course</th>
+                            <th>Branch</th>
+                            <th>Year</th>
+                            <th>Issued Date</th>
+                            <th>Hash</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+
+            certificates.forEach(cert => {
+
+                html += `
+                    <tr>
+                        <td>${escapeHtml(cert.certificate_id || "")}</td>
+                        <td>${escapeHtml(cert.student_name || "")}</td>
+                        <td>${escapeHtml(cert.course || "")}</td>
+                        <td>${escapeHtml(cert.branch || "")}</td>
+                        <td>${escapeHtml(cert.year || "")}</td>
+                        <td>${escapeHtml(cert.issued_date || "")}</td>
+                        <td>${escapeHtml(
+                            cert.hash ||
+                            cert.certificate_hash ||
+                            ""
+                        )}</td>
+                    </tr>
+                `;
+
+            });
+
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+
+            container.innerHTML = html;
+
+        }
+
+        catch (error) {
+
+            container.innerHTML =
+                "<p>Unable to connect to backend.</p>";
+
+            console.error(error);
+        }
+
+    }
+
+
+    // ============================================================
+    // VERIFICATION HISTORY
+    // ============================================================
+
+    async function loadVerificationHistory() {
+
+        const container =
+            document.getElementById(
+                "verificationHistoryContent"
+            );
+
+
+        if (!collegeData) {
+            return;
+        }
+
+
+        container.innerHTML =
+            "<p>Loading verification history...</p>";
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/dashboard/${collegeData.college_id}`
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                container.innerHTML =
+                    "<p>Unable to load history.</p>";
+
+                return;
+            }
+
+
+            const history =
+                result.verification_history ||
+                result.history ||
+                [];
+
+
+            if (history.length === 0) {
+
+                container.innerHTML =
+                    "<p>No verification history available.</p>";
+
+                return;
+            }
+
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Certificate ID</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+
+            history.forEach(item => {
+
+                html += `
+                    <tr>
+                        <td>${escapeHtml(
+                            item.certificate_id || ""
+                        )}</td>
+
+                        <td>${escapeHtml(
+                            item.status ||
+                            (item.valid ? "VALID" : "TAMPERED")
+                        )}</td>
+
+                        <td>${escapeHtml(
+                            item.timestamp ||
+                            item.date ||
+                            ""
+                        )}</td>
+
+                        <td>${escapeHtml(
+                            item.message || ""
+                        )}</td>
+                    </tr>
+                `;
+
+            });
+
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+
+            container.innerHTML = html;
+
+        }
+
+        catch (error) {
+
+            container.innerHTML =
+                "<p>Unable to connect to backend.</p>";
+
+            console.error(error);
+        }
+
+    }
+
+
+    // ============================================================
+    // ADMIN LOGIN
+    // ============================================================
+
+    document.getElementById("adminLoginForm")
+        .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        clearMessage("adminLoginMessage");
+
+
+        const username =
+            document.getElementById("adminUsername")
+                .value.trim();
+
+        const password =
+            document.getElementById("adminPassword")
+                .value;
+
+
+        if (!username || !password) {
+
+            setMessage(
+                "adminLoginMessage",
+                "Please enter admin username and password.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/admin/login`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                setMessage(
+                    "adminLoginMessage",
+                    result.message || "Admin login failed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            adminToken = result.token;
+
+
+            document.getElementById("adminLoginForm")
+                .reset();
+
+
+            showSection("adminDashboard");
+
+            loadAdminRequests();
+
+        }
+
+        catch (error) {
+
+            setMessage(
+                "adminLoginMessage",
+                "Unable to connect to backend.",
+                "error"
+            );
+
+            console.error(error);
+        }
+
+    });
+
+
+    // ============================================================
+    // ADMIN REQUESTS
+    // ============================================================
+
+    async function loadAdminRequests() {
+
+        const container =
+            document.getElementById(
+                "adminRequestsContent"
+            );
+
+
+        if (!adminToken) {
+            return;
+        }
+
+
+        container.innerHTML =
+            "<p>Loading requests...</p>";
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/admin/api-requests`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${adminToken}`
+                    }
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                container.innerHTML =
+                    `<p>${escapeHtml(
+                        result.message ||
+                        "Unable to load requests."
+                    )}</p>`;
+
+                return;
+            }
+
+
+            const requests =
+                result.requests || [];
+
+
+            if (requests.length === 0) {
+
+                container.innerHTML =
+                    "<p>No API access requests.</p>";
+
+                return;
+            }
+
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>College ID</th>
+                            <th>College Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+
+            requests.forEach(request => {
+
+                const status =
+                    request.status || "PENDING";
+
+
+                let action = "";
+
+
+                if (status === "PENDING") {
+
+                    action = `
+                        <button
+                            class="success"
+                            onclick="approveRequest('${escapeJs(
+                                request.request_id
+                            )}')"
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            class="danger"
+                            onclick="rejectRequest('${escapeJs(
+                                request.request_id
+                            )}')"
+                        >
+                            Reject
+                        </button>
+                    `;
+
+                }
+                else {
+
+                    action = "No action";
+
+                }
+
+
+                html += `
+                    <tr>
+
+                        <td>
+                            ${escapeHtml(
+                                request.request_id || ""
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                request.college_id || ""
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                request.college_name || ""
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(status)}
+                        </td>
+
+                        <td>
+                            ${action}
+                        </td>
+
+                    </tr>
+                `;
+
+            });
+
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+
+            container.innerHTML = html;
+
+        }
+
+        catch (error) {
+
+            container.innerHTML =
+                "<p>Unable to connect to backend.</p>";
+
+            console.error(error);
+        }
+
+    }
+
+
+    async function approveRequest(requestId) {
+
+        if (!adminToken) {
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/admin/api-requests/${encodeURIComponent(requestId)}/approve`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${adminToken}`,
+
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    result.message ||
+                    "Unable to approve request."
+                );
+
+                return;
+            }
+
+
+            alert(
+                result.message ||
+                "API access approved."
+            );
+
+
+            loadAdminRequests();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "Unable to connect to backend."
+            );
+
+            console.error(error);
+        }
+
+    }
+
+
+    async function rejectRequest(requestId) {
+
+        if (!adminToken) {
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API}/api/admin/api-requests/${encodeURIComponent(requestId)}/reject`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${adminToken}`,
+
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    result.message ||
+                    "Unable to reject request."
+                );
+
+                return;
+            }
+
+
+            alert(
+                result.message ||
+                "API access request rejected."
+            );
+
+
+            loadAdminRequests();
+
+        }
+
+        catch (error) {
+
+            alert(
+                "Unable to connect to backend."
+            );
+
+            console.error(error);
+        }
+
+    }
+
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+
+    function collegeLogout() {
+
+        collegeData = null;
+
+        document.getElementById("collegeRegisterForm")
+            .reset();
+
+        document.getElementById("collegeLoginForm")
+            .reset();
+
+        document.getElementById("certificateRegisterForm")
+            .reset();
+
+        document.getElementById("verifyCertificateForm")
+            .reset();
+
+        document.getElementById("certificateRegisterResult")
+            .classList.add("hidden");
+
+        document.getElementById("verificationResult")
+            .classList.add("hidden");
+
+        showSection("landingPage");
+    }
+
+
+    function adminLogout() {
+
+        adminToken = null;
+
+        document.getElementById("adminLoginForm")
+            .reset();
+
+        showSection("landingPage");
+    }
+
+
+    // ============================================================
+    // SECURITY / DISPLAY HELPERS
+    // ============================================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function escapeJs(value) {
+
+        return String(value)
+            .replace(/\\/g, "\\\\")
+            .replace(/'/g, "\\'");
+    }
+
+
+    // ============================================================
+    // INITIAL PAGE
+    // ============================================================
+
+    showSection("landingPage");
+
+</script>
+
+</body>
+</html>
