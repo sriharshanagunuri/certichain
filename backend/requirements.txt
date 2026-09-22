@@ -1,0 +1,7 @@
+Flask
+flask-cors
+web3
+gunicorn
+qrcode
+Pillow
+requests
